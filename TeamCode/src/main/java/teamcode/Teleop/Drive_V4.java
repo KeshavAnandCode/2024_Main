@@ -1670,6 +1670,7 @@ public class Drive_V4 extends LinearOpMode{
                     robotX +=2;
                 }
 
+
                 if (gamepad2.x){
                     robotY +=4;
                 }
