@@ -9,7 +9,6 @@ adb connect, adb disconnect, adb kill-server, adb start-server
 robot ip: 192.168.43.1
 
 
-
 ## TeamCode Module
 
 Welcome!
