@@ -43,7 +43,7 @@ import teamcode.Autonomous.RoadRunner.PinpointDrive;
 import teamcode.Robot;
 
 @Config
-@Autonomous (preselectTeleOp = "Drive_V4")
+@Autonomous (preselectTeleOp = "Drive_V3")
 public class LT_RIP extends LinearOpMode {
 
     Robot robot;
@@ -645,37 +645,56 @@ public class LT_RIP extends LinearOpMode {
 
 
         TrajectoryActionBuilder trajectory2 = robot.drive.actionBuilder(new Pose2d(0,0,0))
-                .strafeToLinearHeading(new Vector2d(16, -22.1), Math.toRadians(-38));
-        TrajectoryActionBuilder trajectory3 = robot.drive.actionBuilder(new Pose2d(16,-22.1,Math.toRadians(-38)))
+                .strafeToLinearHeading(new Vector2d(15.9, -22.1), Math.toRadians(-38));
+        TrajectoryActionBuilder trajectory3 = robot.drive.actionBuilder(new Pose2d(15.9,-22.1,Math.toRadians(-38)))
                 .strafeToLinearHeading(new Vector2d(14.5, -27.45), Math.toRadians(-120));
 
         TrajectoryActionBuilder trajectory4 = robot.drive.actionBuilder(new Pose2d(14.5,-27.45,Math.toRadians(-120)))
-                .strafeToLinearHeading(new Vector2d(13.4, -32.1), Math.toRadians(-38));
+                .strafeToLinearHeading(new Vector2d(12.9, -31.9), Math.toRadians(-38));
 
-        TrajectoryActionBuilder trajectory5 = robot.drive.actionBuilder(new Pose2d(13.4,-32.1,Math.toRadians(-38)))
+        TrajectoryActionBuilder trajectory5 = robot.drive.actionBuilder(new Pose2d(12.9,-31.9,Math.toRadians(-38)))
                 .strafeToLinearHeading(new Vector2d(14.5, -22.45), Math.toRadians(-120));
 
         TrajectoryActionBuilder trajectory6 = robot.drive.actionBuilder(new Pose2d(14.5,-22.45,Math.toRadians(-120)))
-                .strafeToLinearHeading(new Vector2d(15.4, -42), Math.toRadians(-38));
+                .strafeToLinearHeading(new Vector2d(15.4, -41.7), Math.toRadians(-38));
 
-        TrajectoryActionBuilder trajectory7 = robot.drive.actionBuilder(new Pose2d(15.4,-42,Math.toRadians(-38)))
+        TrajectoryActionBuilder trajectory7 = robot.drive.actionBuilder(new Pose2d(15.4,-41.7,Math.toRadians(-38)))
                 .strafeToLinearHeading(new Vector2d(14.5, -17.45), Math.toRadians(-120));
         TrajectoryActionBuilder trajectory8 = robot.drive.actionBuilder(new Pose2d(14.5,-17.5,Math.toRadians(0)))
                 .strafeToConstantHeading(new Vector2d(4, -32));
-        TrajectoryActionBuilder trajectory9b = robot.drive.actionBuilder(new Pose2d(4,-32,Math.toRadians(0)))
+        TrajectoryActionBuilder trajectory9a = robot.drive.actionBuilder(new Pose2d(4,-32,Math.toRadians(0)))
+                .strafeToLinearHeading(new Vector2d(24, 8), Math.toRadians(0));
+
+
+        TrajectoryActionBuilder trajectory9b = robot.drive.actionBuilder(new Pose2d(1.6,-32,Math.toRadians(0)))
+                .strafeToLinearHeading(new Vector2d(24, 7), Math.toRadians(0));
+
+        TrajectoryActionBuilder trajectory9c = robot.drive.actionBuilder(new Pose2d(1.6,-32,Math.toRadians(0)))
+                .strafeToLinearHeading(new Vector2d(24, 6), Math.toRadians(0));
+        TrajectoryActionBuilder trajectory9d = robot.drive.actionBuilder(new Pose2d(1.6,-32,Math.toRadians(0)))
                 .strafeToLinearHeading(new Vector2d(24, 5), Math.toRadians(0));
+        TrajectoryActionBuilder trajectory9e = robot.drive.actionBuilder(new Pose2d(1.6,-32,Math.toRadians(0)))
+                .strafeToLinearHeading(new Vector2d(24, 4), Math.toRadians(0));
 
 
-        TrajectoryActionBuilder trajectory9 = robot.drive.actionBuilder(new Pose2d(1.6,-32,Math.toRadians(0)))
-                .strafeToLinearHeading(new Vector2d(24, 5), Math.toRadians(0));
 
+        TrajectoryActionBuilder trajectory10a = robot.drive.actionBuilder(new Pose2d(24,8,Math.toRadians(0)))
+                .strafeToLinearHeading(new Vector2d(1.6, -32), Math.toRadians(0));
 
-        TrajectoryActionBuilder trajectory10 = robot.drive.actionBuilder(new Pose2d(24,5,Math.toRadians(0)))
+        TrajectoryActionBuilder trajectory10b = robot.drive.actionBuilder(new Pose2d(24,7,Math.toRadians(0)))
+                .strafeToLinearHeading(new Vector2d(1.6, -32), Math.toRadians(0));
+
+        TrajectoryActionBuilder trajectory10c = robot.drive.actionBuilder(new Pose2d(24,6,Math.toRadians(0)))
+                .strafeToLinearHeading(new Vector2d(1.6, -32), Math.toRadians(0));
+
+        TrajectoryActionBuilder trajectory10d = robot.drive.actionBuilder(new Pose2d(24,5,Math.toRadians(0)))
                 .strafeToLinearHeading(new Vector2d(1.6, -32), Math.toRadians(0));
 
 
 
-        TrajectoryActionBuilder trajectory11 = robot.drive.actionBuilder(new Pose2d(24,5,Math.toRadians(0)))
+
+
+        TrajectoryActionBuilder trajectory11 = robot.drive.actionBuilder(new Pose2d(24,4,Math.toRadians(0)))
                 .strafeToLinearHeading(new Vector2d(1.8, -37), Math.toRadians(0),
         new TranslationalVelConstraint(125));
 
@@ -803,6 +822,42 @@ public class LT_RIP extends LinearOpMode {
                             new ParallelAction(
                                     new SampleScoreServos(),
                                     new LinearSlidesSampleScore2(),
+                                    trajectory9a.build()
+                            ),
+                            new Serve(),
+                            new ParallelAction(
+                                    new SequentialAction(
+                                            new ExtendoIn(),
+                                            new ParallelAction(
+                                                    new SpecimenHoverServos(),
+                                                    new LinearSlidesPID()
+                                            )
+                                    ),
+                                    trajectory10a.build()
+
+                            ),
+                            new ExtendoIn2()
+
+
+
+                    )
+
+            );
+
+            sleep( 90);
+
+
+
+
+            Actions.runBlocking(new SpecimenPickupServos());
+
+            TARGET = HIGH_SPECIMEN_POS;
+
+            Actions.runBlocking(
+                    new SequentialAction(
+                            new ParallelAction(
+                                    new SampleScoreServos(),
+                                    new LinearSlidesSampleScore2(),
                                     trajectory9b.build()
                             ),
                             new Serve(),
@@ -814,7 +869,8 @@ public class LT_RIP extends LinearOpMode {
                                                     new LinearSlidesPID()
                                             )
                                     ),
-                                    trajectory10.build()
+                                    trajectory10b.build()
+
 
                             ),
                             new ExtendoIn2()
@@ -829,7 +885,6 @@ public class LT_RIP extends LinearOpMode {
 
 
 
-
             Actions.runBlocking(new SpecimenPickupServos());
 
             TARGET = HIGH_SPECIMEN_POS;
@@ -839,7 +894,7 @@ public class LT_RIP extends LinearOpMode {
                             new ParallelAction(
                                     new SampleScoreServos(),
                                     new LinearSlidesSampleScore2(),
-                                    trajectory9.build()
+                                    trajectory9c.build()
                             ),
                             new Serve(),
                             new ParallelAction(
@@ -850,8 +905,7 @@ public class LT_RIP extends LinearOpMode {
                                                     new LinearSlidesPID()
                                             )
                                     ),
-                                    trajectory10.build()
-
+                                    trajectory10c.build()
 
                             ),
                             new ExtendoIn2()
@@ -875,7 +929,7 @@ public class LT_RIP extends LinearOpMode {
                             new ParallelAction(
                                     new SampleScoreServos(),
                                     new LinearSlidesSampleScore2(),
-                                    trajectory9.build()
+                                    trajectory9d.build()
                             ),
                             new Serve(),
                             new ParallelAction(
@@ -886,42 +940,7 @@ public class LT_RIP extends LinearOpMode {
                                                     new LinearSlidesPID()
                                             )
                                     ),
-                                    trajectory10.build()
-
-                            ),
-                            new ExtendoIn2()
-
-
-
-                    )
-
-            );
-
-            sleep( 90);
-
-
-
-            Actions.runBlocking(new SpecimenPickupServos());
-
-            TARGET = HIGH_SPECIMEN_POS;
-
-            Actions.runBlocking(
-                    new SequentialAction(
-                            new ParallelAction(
-                                    new SampleScoreServos(),
-                                    new LinearSlidesSampleScore2(),
-                                    trajectory9.build()
-                            ),
-                            new Serve(),
-                            new ParallelAction(
-                                    new SequentialAction(
-                                            new ExtendoIn(),
-                                            new ParallelAction(
-                                                    new SpecimenHoverServos(),
-                                                    new LinearSlidesPID()
-                                            )
-                                    ),
-                                    trajectory10.build()
+                                    trajectory10d.build()
 
                             ),
                             new ExtendoIn2()
@@ -944,7 +963,7 @@ public class LT_RIP extends LinearOpMode {
                             new ParallelAction(
                                     new SampleScoreServos(),
                                     new LinearSlidesSampleScore2(),
-                                    trajectory9.build()
+                                    trajectory9e.build()
                             ),
                             new Serve(),
                             new ParallelAction(
