@@ -111,6 +111,10 @@ public class Drive_V3 extends LinearOpMode{
     public boolean extendoHoldOut = false;
     public boolean PID_MODE = false;
 
+    public boolean G1B = false;
+
+    public double G1BTime = 0.0;
+
 
     public double angle =0;
 
@@ -166,13 +170,11 @@ public class Drive_V3 extends LinearOpMode{
                 g1, GamepadKeys.Button.START
         );
 
-        ButtonReader G1A = new ButtonReader(
-                g1, GamepadKeys.Button.A
+
+        ButtonReader G1_B = new ButtonReader(
+                g1, GamepadKeys.Button.B
         );
 
-        ButtonReader G1Y = new ButtonReader(
-                g1, GamepadKeys.Button.Y
-        );
 
         ButtonReader G1_DPAD_UP = new ButtonReader(
                 g1, GamepadKeys.Button.DPAD_UP
@@ -217,6 +219,17 @@ public class Drive_V3 extends LinearOpMode{
         ButtonReader DPAD_UP_PRESS = new ButtonReader(
                 g2, GamepadKeys.Button.DPAD_UP
         );
+
+        if (!AUTON_RED){
+            useColorSensor= false;
+        }
+
+        robot.rightSpringHook.setPosition(RIGHT_SPRING_OFF);
+        robot.leftSpringHook.setPosition(LEFT_SPRING_OFF);
+
+        robot.rightStabilizer.setPosition(RIGHT_HOLD_OFF);
+        robot.leftStabilizer.setPosition(LEFT_HOLD_OFF);
+
 
         waitForStart();
 
@@ -333,41 +346,18 @@ public class Drive_V3 extends LinearOpMode{
             //G1 CONTROLS
 
 
-            if (G1A.wasJustPressed()){
-
-                SPEC_MODE = true;
-
-
-
-            }
-
-
-
-            G1A.readValue();
-
-            if (G1Y.wasJustPressed()){
-
-                SPEC_MODE = false;
-
-
-
-            }
-
-            G1Y.readValue();
-
-            if (gamepad1.b){
-                AUTON_RED = true;
-            }
-
-            if (gamepad1.x){
-                AUTON_RED = false;
-            }
-
-
             if (gamepad1.back){
 
                 useColorSensor = false;
             }
+
+            if (G1_B.wasJustPressed()){
+                G1B = true;
+
+                G1BTime = getRuntime();
+            }
+
+            G1_B.readValue();
 
 
 
@@ -681,10 +671,9 @@ public class Drive_V3 extends LinearOpMode{
 
             if (START_PRESS.wasJustReleased()){
 
-                if (pickupSample) {
                     target = (int) (HIGH_SPECIMEN_POS_TELE + linearSlideZeroPosition);
                     PID_MODE = true;
-                }
+                
             }
 
             START_PRESS.readValue();
@@ -859,7 +848,7 @@ public class Drive_V3 extends LinearOpMode{
                 colorSensorTimer = getRuntime();
 
 
-                if (robot.claw.getPosition()> CLAW_CLOSED- 0.04){
+                if (robot.claw.getPosition()< CLAW_CLOSED+ 0.04){
 
                     robot.clawRotate.setPosition(ROTATE_NEUTRAL);
                     robot.clawMove.setPosition(MOVE_WALL_INTAKE);
@@ -887,7 +876,7 @@ public class Drive_V3 extends LinearOpMode{
 
             if (Y_PRESS.wasJustReleased()){
 
-                if (robot.claw.getPosition()< CLAW_CLOSED- 0.04 &&  (pickupSample|| (getRuntime() - colorSensorTimer > 0.25))) {
+                if (robot.claw.getPosition()> CLAW_CLOSED+ 0.04 &&  (pickupSample|| (getRuntime() - colorSensorTimer > 0.25))) {
 
 
                     yToggle = true;
@@ -1025,9 +1014,85 @@ public class Drive_V3 extends LinearOpMode{
                 pickupSample = false;
             }
 
-            if (!AUTON_RED){
-                MOVE_HOVER_SAMPLE = 0.46;
+            //L3 HANG
+
+            if (G1B){
+                double time = getRuntime() - G1BTime;
+
+
+                if (time < 1.3){
+
+                    robot.leftStabilizer.setPosition(LEFT_HOLD_ON);
+
+                    robot.rightStabilizer.setPosition(RIGHT_HOLD_ON);
+
+                    robot.clawMove.setPosition(MOVE_WALL_INTAKE);
+                    robot.clawPivot.setPosition(PIVOT_WALL_INTAKE);
+
+                    target = (int) (HANG_1 + linearSlideZeroPosition);
+                    PID_MODE = true;
+                } else if (time < 2.1 ){
+
+                    target = (int) (HANG_2 + linearSlideZeroPosition);
+                    PID_MODE = true;
+                } else if (time < 2.6 ){
+
+                    PID_MODE = false;
+                    robot.rightSpringHook.setPosition(RIGHT_SPRING_ON);
+                    robot.leftSpringHook.setPosition(LEFT_SPRING_ON);
+                }
+                else if (time < 4.5 ){
+
+                    target = (int) (HANG_3+ linearSlideZeroPosition);
+                    PID_MODE = true;
+
+
+
+                }
+                else if (time < 5 ){
+
+                    robot.clawMove.setPosition(MOVE_AUTONOMOUS_INIT);
+                    robot.clawPivot.setPosition(PIVOT_AUTONOMOUS_INIT);
+                    robot.leftSpringHook.setPosition(LEFT_SPRING_IN);
+                    robot.rightSpringHook.setPosition(RIGHT_SPRING_IN);
+                    extendoOut = true;
+                }
+                else if (time < 5.5 ){
+
+                    extendoOut = false;
+                    target = (int) (HANG_4+ linearSlideZeroPosition);
+                    PID_MODE = true;
+                }
+                else if (time < 6.5 ){
+                    extendoIn = true;
+
+                }
+
+                else {
+                    extendoHoldIn = false;
+                    robot.leftStabilizer.setPosition(LEFT_HOLD_OFF);
+
+                    robot.rightStabilizer.setPosition(RIGHT_HOLD_OFF);
+
+
+                    PID_MODE = false;
+
+                    linearAutomation = true;
+
+                    robot.leftSlide.setPower(-1);
+                    robot.rightSlide.setPower(-1);
+
+                    robot.centerSlide.setPower(-1);
+
+
+
+                    G1B = false;
+                }
+
+
             }
+
+
 
 
 
