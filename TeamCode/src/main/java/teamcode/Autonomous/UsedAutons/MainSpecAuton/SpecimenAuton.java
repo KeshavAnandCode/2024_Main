@@ -379,13 +379,13 @@ public class SpecimenAuton extends LinearOpMode {
                             pushing.build(),
                             new SequentialAction(
                                     Wait(PUSHING_SERVO_ROTATE),
-                                    Servos(0.501, ROTATE_FLIP, 0.501, 0.501),
-                                    Wait(PUSHING_SERVO_OPEN),
-                                    Servos(CLAW_OPEN, 0.501, 0.501, 0.501),
-                                    Wait(PUSHING_SERVO_PIVOT),
-                                    Servos(0.501, 0.501, 0.501, PIVOT_WALL_INTAKE),
+                                    Servos(CLAW_OPEN, ROTATE_FLIP, MOVE_WALL_INTAKE, PIVOT_WALL_INTAKE),
+                                    //Wait(PUSHING_SERVO_OPEN),
+                                    //Servos(CLAW_OPEN, 0.501, 0.501, 0.501),
+                                    //Wait(PUSHING_SERVO_PIVOT),
+                                    //Servos(0.501, 0.501, 0.501, PIVOT_WALL_INTAKE),
                                     Wait(PUSHING_SERVO_MOVE),
-                                    Servos(0.501, 0.501, MOVE_WALL_INTAKE, 0.501),
+                                    //Servos(0.501, 0.501, MOVE_WALL_INTAKE, 0.501),
                                     ExtendoPID(EXTENDO_INITIAL_HUMAN_PLAYER, 1, 0)
                             )
 
@@ -406,7 +406,7 @@ public class SpecimenAuton extends LinearOpMode {
                                 new ParallelAction(
                                         firstScore.build(),
                                         Servos(0.501, ROTATE_AUTON_SPEC_SCORE, MOVE_SPECIMEN_SCORE, PIVOT_SPECIMEN_SCORE),
-                                        LinearSlidePID(HIGH_SPECIMEN_POS, 0.12),
+                                        LinearSlidePID(i == 0 ? FIRST_HIGH_SPECIMEN_POS : HIGH_SPECIMEN_POS, 0.12),
                                         new SequentialAction(
                                                 Wait(EXTENDO_OUT_WAIT),
                                                 ExtendoPID(EXTENDO_SCORE_THRESHOLD, 1, 1)
